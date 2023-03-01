@@ -17,7 +17,7 @@
         </NuxtLink>
           <div class="mt-auto flex items-center">
             <span class="font-sec font-normal text-gray-500"><span class="font-medium text-gray-700">{{ campaign.applications }}</span> {{ campaign.applications == 1 ? "application" : "applications" }}</span>
-            <a :href="`http://localhost:3000/${route}`" target="_blank" class="h-10 flex justify-center items-center w-10 bg-ui-50 rounded-xl ml-auto"><font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square" class="text-gray-500"/></a>
+            <a :href="`https://mirobu.vercel.app/${route}`" target="_blank" class="h-10 flex justify-center items-center w-10 bg-ui-50 rounded-xl ml-auto"><font-awesome-icon icon="fa-solid fa-arrow-up-right-from-square" class="text-gray-500"/></a>
           </div>
 
         </div>
