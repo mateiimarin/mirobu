@@ -4,9 +4,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        'main': {
-          DEFAULT:'#199337',
-        },
+        'blue-ribbon': {
+          50: '#eef7ff',
+          100: '#d8ecff',
+          200: '#b9deff',
+          300: '#89cbff',
+          400: '#52aeff',
+          500: '#0f67fd',
+          600: '#0c53e9',
+          700: '#1143bc',
+          800: '#143c94',
+          900: '#11265a',
+      },
+      
         'ui': {
           50:  '#F2F4F4',
           100: '#EDF0F0',
@@ -29,12 +39,5 @@ export default {
         'sec': ['Roboto', 'sans-serif'],
       }
     },
-    container: {
-      center: true,
-      padding: '0.5 rem',
-    }
   },
-  corePlugins: {
-    preflight: true,
-  }
 }

@@ -4,10 +4,8 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage";
 
-export default defineNuxtPlugin(nuxtApp => {
+export default defineNuxtPlugin(async nuxtApp => {
     // Doing something with nuxtApp
-
-    const config = useRuntimeConfig()
 
     const firebaseConfig = {
         apiKey: "AIzaSyAoViZuPGTQditJstjp3WownE0UPARvWuo",
@@ -35,6 +33,6 @@ export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.provide('storage', storage);
     nuxtApp.provide('storage', storage);
 
-    initializeUser();
+    await initializeUser();
 
   })

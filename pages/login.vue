@@ -1,8 +1,7 @@
 <template>
-    <div class="flex">
-        <div class="bg-black h-screen w-1/3"></div>
-        <div class="w-2/3 flex items-center justify-center">
-            <div class="w-1/3">
+    <div class="flex h-screen w-screen">
+        <div class="flex items-center justify-center w-full">
+            <div class="max-w-[420px]">
                 <h1 class="text-4xl font-bold mb-5">Welcome back</h1>
                 <hr class="mb-2"/>
                 <input type="text" placeholder="Your Email" v-model="email" class="focus:outline-none focus:border-blue-400 bg-gray-50 focus:bg-white transition mb-2.5 px-3 py-2 w-full border-2 rounded border-gray-200"/>
@@ -27,7 +26,7 @@ const login = () => {
     const auth = getAuth();
     signInWithEmailAndPassword(auth, email.value, password.value)
     .then(() => {
-        navigateTo('/app')
+        navigateTo('/admin')
     })
     .catch((error) => {
         switch (error.code) {

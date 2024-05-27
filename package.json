@@ -8,16 +8,15 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@nuxtjs/tailwindcss": "^6.4.1",
-    "nuxt": "^3.2.2"
+    "nuxt": "^3.11.2"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.3.0",
-    "@fortawesome/free-brands-svg-icons": "^6.3.0",
-    "@fortawesome/free-solid-svg-icons": "^6.3.0",
-    "@fortawesome/vue-fontawesome": "^3.0.3",
-    "firebase": "^9.17.1",
+    "@flaticon/flaticon-uicons": "^3.2.1",
+    "@nuxt/ui": "^2.16.0",
+    "firebase": "^10.12.1",
     "marked": "^4.2.12",
-    "openai": "^3.1.0"
+    "openai": "^4.47.1",
+    "vue": "^3.4.27",
+    "vue-router": "^4.3.2"
   }
 }

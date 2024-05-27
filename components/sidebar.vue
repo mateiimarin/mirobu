@@ -1,75 +1,88 @@
 <template>
-    <div>
-        <aside class="h-screen bg-white w-72 py-7 px-3 relative">
-            <div class="mb-6">
-                <h1 class="text-2xl font-semibold font-title px-1">Mirobu</h1>
+    <div class="min-w-72 h-full border-r-2 py-5 px-3.5 border-gray-200 font-main">
+        <div class="relative h-full w-full">
+            <div>
+                <UVerticalNavigation 
+                    :links="links" 
+                    class="font-main"
+                    :ui="{ 
+                        padding: 'p-2.5', 
+                        active: 'text-gray-900 dark:text-primary-400 font-semibold',
+                        inactive: 'text-gray-700',
+                        icon: {
+                            active: 'text-gray-900',
+                            inactive: 'text-gray-700',
+                        },
+                    }" 
+                />
             </div>
-            <ClientOnly>
-                <div>
-                    <div v-for="(route, index) in config" class="py-2 px-3 mb-3 rounded-md cursor-pointer" :class="{active : active === index}">
-                        <font-awesome-icon :icon="route.icon" class="text-gray-600" :class="{activeText : active === index}"/>
-                        <span class="ml-3 font-medium text-gray-500">{{ route.name }}</span>
-                    </div>
+            <div class="mt-4">
+                <div class="flex w-full justify-between px-1 mb-1.5">
+                    <h6 class="text-xs font-medium text-gray-500">CAMPAIGNS</h6>
+                    <UIcon name="i-heroicons-chevron-down" class="text-gray-100"/>
                 </div>
-                
-                <div class="absolute left-0 bottom-3 w-72 px-3" v-if="loaded">
-                    <div class="flex">
-                        <img :src="authUserLogo"  class="h-12 w-12 object-cover rounded-lg"/>
-                        <div class="ml-3">
-                            <span class="font-medium block">{{ authUserData.data().name }}</span>
-                            <span class="font-sm">Profile · Settings</span>
+                <ClientOnly> 
+                    <div v-if="authUser.available">
+                        <div v-if="authUser.data.campaigns.length > 0" class="flex flex-col-reverse gap-0.5">
+                            <div v-for="campaign in authUser.data.campaigns" class="px-2.5 py-1.5 rounded-md cursor-pointer" :class="currentCampaignId == campaign.id ? 'bg-gray-100 border-r-4 border-primary-500' : ''">
+                                <NuxtLink :to="`/admin/${campaign.id}`" @click="currentCampaignId = campaign.id">
+                                    <div class="flex gap-2 items-center" >
+                                        <div class="text-sm">{{ campaign.name }}</div>
+                                    </div>
+                                </NuxtLink>
+                            </div>
                         </div>
+                        <div v-else class="text-sm text-gray-600 px-1">There are no campaigns yet.</div>
                     </div>
-                </div>
-            </ClientOnly>
-        </aside>
+                    <template #fallback>
+                        <div class="space-y-2.5">
+                            <USkeleton class="h-7 w-full" />
+                            <USkeleton class="h-7 w-full" />
+                            <USkeleton class="h-7 w-full" />
+                        </div>
+                    </template>
+                </ClientOnly> 
+            </div>
+            <div class="absolute bottom-0 font-main w-full space-y-1 p-1">
+                <UButton color="primary" @click="isModalOpen = true" block>New Campaign</UButton>
+            </div>
+        </div>
+        <UModal v-model="isModalOpen" :ui="{shadow: 'shadow-lg', width: 'max-w-fit sm:max-w-fit'}">
+           <NewCampaignModal @close="isModalOpen = false"/>
+        </UModal>
     </div>
 </template>
 
 <script setup>
-const active = ref(0);
-const config = [
+const authUser = useAuthUser();
+const currentCampaignId = ref(useRoute().params.id);
+const isModalOpen = ref(false);
+
+const links = [
     {
-        name: 'Dashboard',
-        icon: 'fa-solid fa-house'
+        label: 'Dashboard',
+        icon: 'i-heroicons-home',
+        to: '/dashboard'
     },
     {
-        name: 'Analytics',
-        icon: 'fa-solid fa-chart-simple'
+        label: 'Analytics',
+        icon: 'i-heroicons-arrow-trending-up',
+        to: '/analytics'
     },
     {
-        name: 'Integrations',
-        icon: 'fa-solid fa-arrow-right-arrow-left'
+        label: 'Integrations',
+        icon: 'i-heroicons-arrows-right-left',
+        to: '/integrations'
     },
     {
-        name: 'Settings',
-        icon: 'fa-solid fa-gear'
-    },
-]
-
-
-const loaded = ref(false);
-
-const authUserLogo = useAuthUserLogo();
-const authUserData = useAuthUserData();
-
-if(authUserLogo.value) loaded.value = true;
-else {
-    watch(authUserLogo, () => {
-        loaded.value = true;
-    })
-}
-
-
+        label: 'Settings',
+        icon: 'i-heroicons-cog-6-tooth',
+        to: '/settings'
+    }
+] 
 
 </script>
 
-<style scoped>
-.active {
-    background-color: #F0F5FF;
-}
+<style lang="scss" scoped>
 
-.activeText {
-    color: #1357d6;
-}
 </style>

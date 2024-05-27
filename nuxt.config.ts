@@ -1,14 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-    modules: ['@nuxtjs/tailwindcss'],
-    css: [
-        '@fortawesome/fontawesome-svg-core/styles.css',
-        'assets/fonts/fonts.css',
-    ],
-    tailwindcss: {
-        cssPath: '~/assets/css/tailwind.css',
-      },
+    modules: ['@nuxt/ui'],
     runtimeConfig: {
-        openaiKey: process.env.NUXT_OPENAI_KEY,
-    }
+        openAiApiKey: process.env.NUXT_OPEN_AI_API_KEY,
+    },
+    css: [
+        'assets/css/flat-icon.css',
+        'assets/css/styles.css'
+    ],
+    colorMode: {
+        preference: 'light'
+    },
 })

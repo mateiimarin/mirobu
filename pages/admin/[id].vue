@@ -1,75 +1,107 @@
 <template>
-    <div>
-        <div class="h-screen bg-ui-50 flex">
-            <Sidebar />
-            <div class="px-7 py-6 w-full">
-                <h2 class="font-bold text-2xl mb-4">Applications</h2>
-                <ClientOnly><FilterBar @filter-change="updateFilter"/>
-                    <div v-if="filteredApplications.length != 0" class="grid-container mt-6">
-                        <ApplicationCard v-for="application in filteredApplications" :application="application" :active="activeTab" @click="openPopup(application)" class="cursor-pointer"></ApplicationCard>
+    <div class="px-4 pt-5">
+        <div class="bg-white border mb-3 rounded-lg p-3 flex justify-between items-center">
+            <ClientOnly>
+                <div class="flex items-center gap-4"><h2 class="text-lg font-bold">{{ campaign?.data.name }}</h2>
+                    <NuxtLink :to="`/${campaignHandle}`">
+                        <UButton icon="i-heroicons-arrow-top-right-on-square" color="gray" size="xs"/>
+                    </NuxtLink></div>
+                <div class="flex gap-3 text-sm font-semibold  ">
+                    <div><span>{{ campaign?.data.applications }}</span> Applications</div>
+                    <div>
+                        <span>{{ Math.round((campaign?.data.scores * 10) / campaign?.data.applications)  }}% Match</span>
                     </div>
-                    <div v-else class="font-main py-6 ">There are no applications matching your filter criteria</div>
-                </ClientOnly>
-            </div>
-            <Teleport to="body">
-                <Popup :application="popupApplication" @close="showPopup = false" v-if="showPopup"/>
-            </Teleport>
+                </div>
+            </ClientOnly>
+            
         </div>
+        <UTable :loading="isLoadingData"
+            :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }"
+            :progress="{ color: 'primary', animation: 'carousel' }" class="w-full bg-white rounded-t-lg border"
+            :empty-state="{ icon: 'i-heroicons-circle-stack-20-solid', label: 'No applications.' }" :columns="columns"
+            :rows="rows" @select="openApplication">
+            <template #name-data="{ row }">
+                <div class="flex items-center gap-3">
+                    <img :src="row.picture" :alt="row.name" class="object-cover h-8 w-8 rounded-full bg-gray-100" />
+                    <div class="text-gray-900 font-semibold">{{ row.name }}</div>
+                </div>
+            </template>
+
+            <template #score-data="{ row }">
+                <div class="h-6 w-6 rounded-full flex items-center justify-center text-white font-semibold "
+                    :class="`bg-${row.color_indicator}-500`"><span>{{ row.score }}</span></div>
+            </template>
+            <template #keywords-data="{ row }">
+                <div class="relative space-x-2 max-w-52 overflow-hidden">
+                    <UBadge color="gray" :ui="{ rounded: 'rounded-full' }" v-for="keyword in row.keywords">{{ keyword }}
+                    </UBadge>
+
+                    <div class="absolute inset-y-0 right-0 w-1/5" style="background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 1));"></div>
+                </div>
+            </template>
+        </UTable>
+        <div class="bg-white py-2 px-3 border-x border-b  rounded-b-lg w-full flex justify-end">
+            <UPagination v-model="page" :page-count="pageCount" :total="applications.length" />
+        </div>
+
+        <UModal v-model="selection.available"
+            :ui="{ shadow: 'shadow-lg', width: 'w-[800px] sm:min-w-[800px]', overlay: { background: 'bg-black/20' } }">
+            <ApplicationModal :application="selection.data" />
+        </UModal>
     </div>
 </template>
 
 <script setup>
-import { collection, getDocs } from '@firebase/firestore';
-
-const campaign = useRoute().params.id;
-const authUserData = useAuthUserData();
-
-const showPopup = ref(false);
-const popupApplication = ref();
-const refreshKey = ref(0);
-const openPopup = (appl) => {
-    popupApplication.value = appl;
-    showPopup.value = true;
-}
-
-
-
-
-const search = ref('');
-const limits = ref({min_score: 1, max_score: 10});
-const activeTab = ref(0);
-
-const updateFilter = (newLimits, newActive, newSearch) => {
-    limits.value = newLimits;
-    activeTab.value = newActive;
-    console.log(activeTab.value)
-    search.value = newSearch;
-}
+const campaignHandle = useRoute().params.id;
 
 const applications = ref([]);
-const applicationFiles = ref([]);
-const {$db} = useNuxtApp();
+const campaign = ref();
+const columns = [
+    {
+        key: 'name',
+        label: 'Name'
+    },
+    {
+        key: 'email',
+        label: 'Email'
+    },
+    {
+        key: 'slogan',
+        label: 'Description'
+    },
+    {
+        key: 'keywords',
+        label: 'Details'
+    },
+    {
+        key: 'score',
+        label: 'Score'
+    }
+]
 
-if($db) {
-    const applicationSnapshot = await getDocs(collection( $db, `campaigns/${campaign}/applications`));
-    applicationSnapshot.forEach((doc) => {
-        applications.value.push(doc.data());
-    })
+const isLoadingData = ref(true);
+const selection = ref({
+    data: null,
+    available: false,
+})
+
+const openApplication = (application) => {
+    selection.value.data = application;
+    selection.value.available = true;
 }
 
-const filteredApplications = computed(() => {
-    return applications.value.filter(
-    (application) => application.name.toLowerCase().includes(search.value.toLowerCase()) 
-    && parseInt(application.score) >= limits.value.min_score 
-    && parseInt(application.score) <= limits.value.max_score)
-});
+const page = ref(1);
+const pageCount = 8;
+
+const rows = computed(() => {
+    return applications.value.slice((page.value - 1) * pageCount, (page.value) * pageCount)
+})
+
+onMounted(async () => {
+    campaign.value = await getCampaign(campaignHandle);
+    applications.value = await getApplications(campaignHandle);
+    isLoadingData.value = false;
+})
 </script>
 
-<style  scoped>
-    .grid-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      grid-gap: 1.5rem;
-      width: 100%;
-    }
-</style>
+<style lang="scss" scoped></style>

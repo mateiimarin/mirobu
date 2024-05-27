@@ -1,7 +1,7 @@
 <template>
-    <div class="flex h-screen">
-        <div class="w-3/5 flex items-center justify-center">   
-            <div class="w-3/6">
+    <div class="flex h-screen w-screen">
+        <div class="w-full flex items-center justify-center">   
+            <div class="w-full max-w-[520px]">
                 <h1 class="text-4xl font-bold mb-5 font-main">Welcome to Mirobu</h1>
                 <hr class="mb-2"/>
                 <form  @submit.prevent="signup">
@@ -11,14 +11,13 @@
                     <span class="font-sec font-bold mb-1">Company Identity</span>
                     <input type="text" placeholder="Company Name" v-model="credentials.name" class="focus:outline-none focus:border-blue-400 bg-gray-50 focus:bg-white transition mb-2.5 px-3 py-2 w-full border-2 rounded border-gray-200" required/>
                     <input type="text" placeholder="Company Slogan" v-model="credentials.slogan" class="focus:outline-none focus:border-blue-400 bg-gray-50 focus:bg-white transition mb-2.5 px-3 py-2 w-full border-2 rounded border-gray-200" required/>
-                    <input type="file" accept="image/*" placeholder="Upload your logo" ref="logo" class="focus:outline-none focus:border-blue-400 bg-gray-50 focus:bg-white transition mb-2.5 px-3 py-2 w-full border-2 rounded border-gray-200 mb-6" required/>
+                    <input type="file" accept="image/*" placeholder="Upload your logo" ref="logo" class="focus:outline-none focus:border-blue-400 bg-gray-50 focus:bg-white transition px-3 py-2 w-full border-2 rounded border-gray-200 mb-6" required/>
                     <p v-if="errorMessage" class="text-center text-red-500 font-bold mb-3.5">{{ errorMessage }}</p>
                     <input type="submit" class="w-full bg-black rounded p-3 text-white text-sm tracking-wider font-semibold mb-5 cursor-pointer" />
                 </form>
                 <p class="text-center"><span class="text-gray-500">Already have an account?</span> <NuxtLink to="/login" class="font-bold">Login</NuxtLink></p>
             </div>             
         </div>
-        <div class="bg-main w-2/5"></div>
     </div>
 </template>
 
@@ -37,17 +36,19 @@ const signup = () => {
 
     if(credentials.value.name != "") {
         createUserWithEmailAndPassword($auth, credentials.value.email, credentials.value.password)
-        .then((data) => {
-            setDoc(doc($db, "users", data.user.uid), {
+        .then( async (data) => {
+            await setDoc(doc($db, "users", data.user.uid), {
                 name: credentials.value.name,
                 slogan: credentials.value.slogan,
+                campaigns: [],
+                email: credentials.value.email,
             });
 
-            uploadBytes(storageRef($storage, 'users/' + credentials.value.name), logo.value.files[0]).then(() => {
+            await uploadBytes(storageRef($storage, 'users/' + credentials.value.name), logo.value.files[0]).then(() => {
                 console.log('Uploaded succesfully');
             });
 
-            navigateTo('/app')
+            navigateTo('/admin')
 
         })
         .catch((error) => {
