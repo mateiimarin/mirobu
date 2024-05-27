@@ -18,7 +18,7 @@
                         <UButton size="md" color="gray" class="text-lg p-2" variant="ghost"><i
                                 class="fi fi-rr-envelope w-5 h-5"></i></UButton>
                     </NuxtLink>
-                    <NuxtLink v-if="application.linkedin != '404'" :to="`https:${application.linkedin}`"
+                    <NuxtLink v-if="application.linkedin != '404'" :to="`https://${application.linkedin}`"
                         target="_blank">
                         <UButton size="md" color="gray" class="text-lg p-2" variant="ghost"><i
                                 class="fi fi-brands-linkedin w-5 h-5"></i></UButton>
