@@ -11,6 +11,7 @@ const evaluateApplication = async ( transcript, applicantEmail, campaignHandle, 
         },
         body: { resume: transcript, requirements: requirements },
     });
+    console.log(data)
     data.email = applicantEmail;
 
     await addDoc(collection($db, `campaigns/${campaignHandle}/applications`), data);

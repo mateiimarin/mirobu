@@ -80,6 +80,6 @@ export default defineEventHandler(async (event) => {
         return JSON.parse(response.choices[0].message.content);
     }
     catch (error) {
-        console.log(error);
+        return error;
     }
 })
